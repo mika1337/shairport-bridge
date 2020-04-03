@@ -5,7 +5,8 @@
 import logging
 import logging.config
 import traceback
-from base64 import b64encode
+from base64    import b64encode
+from threading import Lock,Timer
 
 # =============================================================================
 # Other imports
@@ -35,7 +36,11 @@ class ShairportBridge:
         self._cover_data["cover"] = dict()
         self._cover_data["cover"]["mimetype"] = ""
         self._cover_data["cover"]["data"] = ""
-    
+
+        self._track_cover_data_lock = Lock()
+        self._track_cover_update_list = set()
+        self._track_cover_update_timer = None
+
     def start(self):
         self._ssm.start()
         self._wss.start()
@@ -60,12 +65,18 @@ class ShairportBridge:
         pass
 
     def onShairportSyncTrackUpdate(self,data,param):
+        self._track_cover_data_lock.acquire()
+
+        if self._track_cover_update_timer != None:
+            self._track_cover_update_timer.cancel()
+            self._track_cover_update_timer = None
+
         try:
             if data != "cover":
                 value = param.decode("utf-8")
                 if data not in self._track_data["track"] or self._track_data["track"][data] != value:
                     self._track_data["track"][data] = value
-                    self._wss.sendToClients(self._track_data)
+                    self._track_cover_update_list.add("track_data")
             else:
                 if data:
                     mime_type = self._guessImageMime(param)
@@ -74,9 +85,28 @@ class ShairportBridge:
                     if self._cover_data["cover"]["data"] != b64_cover:
                         self._cover_data["cover"]["mimetype"] = mime_type
                         self._cover_data["cover"]["data"] = b64_cover
-                        self._wss.sendToClients(self._cover_data,log=False)
+                        self._track_cover_update_list.add("cover_data")
         except:
             logging.error( "Exception in onShairportSyncTrackUpdate: %s" % traceback.format_exc() )
+        
+        self._track_cover_update_timer = Timer(0.1,self._onTrackCoverTimerEnd)
+        self._track_cover_update_timer.start()
+
+        self._track_cover_data_lock.release()
+
+    def _onTrackCoverTimerEnd(self):
+        self._track_cover_data_lock.acquire()
+
+        for data in self._track_cover_update_list:
+            if data == "track_data":
+                self._wss.sendToClients(self._track_data)
+            elif data == "cover_data": 
+                self._wss.sendToClients(self._cover_data,log=False)
+
+        self._track_cover_update_list.clear()
+        self._track_cover_update_timer = None
+        self._track_cover_data_lock.release()
+
 
     def _guessImageMime(self,magic):
         if magic.startswith(b"\xff\xd8"):
