@@ -19,6 +19,7 @@ class ShairportBridge:
     # Note: only process play_start and play_end as others are unreliable
     _state_from_player_event = { "play_start": "playing"
                                , "play_end": "stopped" }
+    _track_cover_timer_duration = 0.25
 
     def __init__(self,ws_port):
         self._ws_port = ws_port
@@ -89,7 +90,7 @@ class ShairportBridge:
         except:
             logging.error( "Exception in onShairportSyncTrackUpdate: %s" % traceback.format_exc() )
         
-        self._track_cover_update_timer = Timer(0.1,self._onTrackCoverTimerEnd)
+        self._track_cover_update_timer = Timer(self._track_cover_timer_duration,self._onTrackCoverTimerEnd)
         self._track_cover_update_timer.start()
 
         self._track_cover_data_lock.release()

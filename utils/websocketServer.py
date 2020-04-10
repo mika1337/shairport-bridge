@@ -34,6 +34,8 @@ class WebSocketServer:
     def sendToClients(self,data,log=True):
         if log:
             logging.debug("Sending {} to {} client(s)".format(data,len(self._connections)))
+        else:
+            logging.debug("Sending data to {} client(s)".format(len(self._connections)))
 
         payload = json.dumps( data )
         for websocket in self._connections:
