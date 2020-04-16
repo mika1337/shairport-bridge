@@ -65,7 +65,7 @@ class WebSocketServer:
                 logging.debug("Data received from {}: {}".format(endpoint,message))
         finally:
             logging.info("{} disconnected".format(endpoint))
-            await unregister(websocket)
+            await _unregister(websocket)
 
     async def _register(self,websocket):
         self._connections.add(websocket)
