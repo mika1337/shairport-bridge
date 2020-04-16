@@ -4,8 +4,10 @@
 # Builtin imports
 import logging
 import logging.config
+import os
 import traceback
 from base64    import b64encode
+from sys       import argv
 from threading import Lock,Timer
 
 # =============================================================================
@@ -120,7 +122,15 @@ class ShairportBridge:
 # =============================================================================
 # Main
 if __name__ == '__main__':
-    logging.config.fileConfig("logging.conf")
+    config_path = os.path.join( os.path.dirname(os.path.realpath(__file__))
+                              , "config" )
+
+    if len(argv) >=2 and argv[1] == "-d":
+        logging_conf_path = os.path.join( config_path, "logging-dev.conf" )
+    else:
+        logging_conf_path = os.path.join( config_path, "logging-prod.conf" )
+    logging.config.fileConfig( logging_conf_path )
+
     logging.info("Shairport bridge starting")
 
     sb = ShairportBridge(1234)
