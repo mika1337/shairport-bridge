@@ -7,6 +7,7 @@ Websocket bridge with [`shairport-sync`](https://github.com/mikebrady/shairport-
 This projet is based on [`shairport-sync-mqtt-display`](https://github.com/idcrook/shairport-sync-mqtt-display)
 
 ## Requirements
+- [Python paho-mqtt](https://www.eclipse.org/paho/)
 - [Python websockets](https://websockets.readthedocs.io/en/stable/)
 - [shairport-sync](https://github.com/mikebrady/shairport-sync) (>=3.3)
 - MQTT broker ([mosquitto](https://mosquitto.org) for instance)
