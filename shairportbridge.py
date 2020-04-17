@@ -12,8 +12,8 @@ from threading import Lock,Timer
 
 # =============================================================================
 # Other imports
-from utils.shairportSyncMqtt import ShairportSyncMQTT
-from utils.websocketServer   import WebSocketServer
+from shairportbridge.mqtt      import ShairportSyncMQTT
+from shairportbridge.websocket import WebSocketServer
 
 # =============================================================================
 # Class
