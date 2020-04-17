@@ -1,1 +1,2 @@
+paho-mqtt==1.5.0
 websockets==8.1
