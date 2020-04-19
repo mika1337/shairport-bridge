@@ -123,7 +123,7 @@ class ShairportBridge:
 # Main
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-d","--dev", help="Enable development logging", action="store_true")
+    parser.add_argument("-d","--dev", help="enable development logging", action="store_true")
     args = parser.parse_args()
 
     config_path = os.path.join( os.path.dirname(os.path.realpath(__file__))
