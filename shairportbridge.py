@@ -2,16 +2,16 @@
 
 # =============================================================================
 # Builtin imports
+import argparse
 import logging
 import logging.config
 import os
 import traceback
 from base64    import b64encode
-from sys       import argv
 from threading import Lock,Timer
 
 # =============================================================================
-# Other imports
+# Local imports
 from shairportbridge.mqtt      import ShairportSyncMQTT
 from shairportbridge.websocket import WebSocketServer
 
@@ -122,10 +122,14 @@ class ShairportBridge:
 # =============================================================================
 # Main
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d","--dev", help="Enable development logging", action="store_true")
+    args = parser.parse_args()
+
     config_path = os.path.join( os.path.dirname(os.path.realpath(__file__))
                               , "config" )
 
-    if len(argv) >=2 and argv[1] == "-d":
+    if args.dev:
         logging_conf_path = os.path.join( config_path, "logging-dev.conf" )
     else:
         logging_conf_path = os.path.join( config_path, "logging-prod.conf" )
