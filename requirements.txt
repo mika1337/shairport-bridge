@@ -1,2 +1,3 @@
 paho-mqtt>=1.5.0
+pyyaml>=3.13
 websockets>=8.1
